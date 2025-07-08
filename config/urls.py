@@ -29,6 +29,14 @@ urlpatterns = [
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('swagger.json', schema_view.without_ui(cache_timeout=0), name='schema-json'),
 ]
+# Ajouter les apps selon les features activées
+if settings.INOVOCB_FEATURES.get('OCR_CORE'):
+    urlpatterns.append(path('receipts/', include('apps.receipts.urls')))
+if settings.INOVOCB_FEATURES.get('GEOLOCATION'):
+    urlpatterns.append(path('locations/', include('apps.locations.urls')))
+
+if settings.INOVOCB_FEATURES.get('REWARDS_SYSTEM'):
+    urlpatterns.append(path('rewards/', include('apps.rewards.urls')))
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

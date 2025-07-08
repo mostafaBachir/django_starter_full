@@ -26,6 +26,7 @@ DJANGO_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
 ]
 
 THIRD_PARTY_APPS = [
@@ -40,7 +41,10 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     'apps.accounts',
+    'apps.receipts',
+    'apps.locations',
     'apps.notifications',
+    'apps.rewards',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -79,9 +83,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
 # Database
+# Database
 DATABASES = {
-    'default': env.db()
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': env('DB_NAME', default='inovocb_db'),
+        'USER': env('DB_USER', default='postgres'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST', default='localhost'),
+        'PORT': env('DB_PORT', default='5432'),
+    }
 }
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -129,6 +142,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Custom user model
 AUTH_USER_MODEL = 'accounts.User'
+SITE_ID = 1
 
 # REST Framework
 REST_FRAMEWORK = {
@@ -191,4 +205,28 @@ CHANNEL_LAYERS = {
             "hosts": [env('REDIS_URL', default='redis://localhost:6379/0')],
         },
     },
+}
+
+# InovoCB Features Flags
+INOVOCB_FEATURES = {
+    'OCR_CORE': True,
+    'REWARDS_SYSTEM': True,
+    'GEOLOCATION': True,
+    'PHONE_AUTH': True,  
+    'SOCIAL_AUTH': True,  
+    'TWO_FACTOR_AUTH': False,  
+    'ANALYTICS': False,
+    'KANBAN': False,
+    'AI_ASSISTANT': False,
+    'PREDICTIONS': False,
+}
+
+# InovoCB Specific Settings
+INOVOCB_SETTINGS = {
+    'ALLOW_REGISTRATION': True,
+    'PHONE_VERIFICATION_REQUIRED': False,  # True en production
+    'EMAIL_VERIFICATION_REQUIRED': False,  # True en production
+    'MAX_UPLOAD_SIZE': 10 * 1024 * 1024,  # 10MB
+    'SUPPORTED_IMAGE_FORMATS': ['jpg', 'jpeg', 'png', 'webp'],
+    'OCR_SERVICE_URL': env('OCR_SERVICE_URL', default='http://localhost:8080'),
 }
